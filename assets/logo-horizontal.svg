@@ -1,0 +1,13 @@
+<svg width="240" height="66" viewBox="0 0 240 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g font-family="'Manrope', Arial, sans-serif" font-weight="700" font-size="40" letter-spacing="1">
+<text x="70" y="46" fill="url(#grad1)">Икорочка</text>
+</g>
+<circle cx="30" cy="33" r="30" fill="#121316" stroke="url(#grad1)" stroke-width="4"/>
+<circle cx="30" cy="33" r="20" fill="url(#grad2)"/>
+<circle cx="30" cy="33" r="12" fill="url(#grad3)"/>
+<defs>
+<linearGradient id="grad1" x1="0" y1="0" x2="240" y2="66" gradientUnits="userSpaceOnUse"><stop stop-color="#D7371C"/><stop offset="1" stop-color="#FF7B2F"/></linearGradient>
+<radialGradient id="grad2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(20 20) rotate(45) scale(50)"><stop stop-color="#D7371C"/><stop offset="1" stop-color="#FF5A26"/></radialGradient>
+<radialGradient id="grad3" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(24 24) rotate(45) scale(30)"><stop stop-color="#FF8C50"/><stop offset="1" stop-color="#D7371C"/></radialGradient>
+</defs>
+</svg>

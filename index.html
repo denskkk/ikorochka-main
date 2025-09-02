@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Икорочка на свежей корочке – преміальна червона ікра та морепродукти</title>
+  <meta name="description" content="Икорочка на свежей корочке – премиальная красная икра, морепродукты и готовые деликатесы. Свежесть, честность и бережная доставка по Украине." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Load main CSS non-blocking: preload then apply to avoid render-blocking
+    with noscript fallback for users without JS -->
+  <link rel="preload" href="./css/styles.css" as="style" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="./css/styles.css"></noscript>
+  <!-- Preload hero image to speed up Largest Contentful Paint (LCP) -->
+  <link rel="preload" href="./assets/hero@2x.webp" as="image" type="image/webp">
+  <link rel="icon" type="image/svg+xml" href="./assets/logo-icon.svg" />
+</head>
+<body>
+  <header class="site-header" data-transparent>
+    <div class="container flex between center-v">
+      <a href="#top" class="logo" aria-label="Икорочка на свежей корочке – на главную">
+        <img src="./assets/logo-horizontal.svg" alt="Логотип Икорочка на свежей корочке" />
+      </a>
+      <nav class="main-nav" aria-label="Главное меню">
+        <ul>
+          <li><a href="#catalog">Каталог</a></li>
+          <li><a href="#benefits">Почему мы</a></li>
+          <li><a href="#about">О нас</a></li>
+          <li><a href="#delivery">Доставка</a></li>
+          <li><a href="#contacts">Контакты</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <button class="btn ghost" data-dialog="callback">Заказать звонок</button>
+        <button class="cart-btn" aria-label="Корзина"><span class="cart-count" id="cartCount">0</span></button>
+        <button class="nav-toggle" aria-label="Меню"><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="hero-media" aria-hidden="true">
+      <div class="hero-overlay-gradient"></div>
+      <picture>
+        <!-- Use local optimized hero images to reduce network latency and improve LCP -->
+        <source srcset="./assets/hero@2x.webp" type="image/webp">
+        <img src="./assets/hero@2x.jpg" alt="Красная икра премиального качества" loading="eager" fetchpriority="high" width="1600" height="900" />
+      </picture>
+      <canvas id="grainCanvas"></canvas>
+    </div>
+    <div class="container hero-content">
+      <h1><span class="accent-grad">Икорочка на свежей корочке</span><br> премиальная икра и морепродукты</h1>
+      <p class="lead">Свежая северная икра и деликатесы без компромиссов. Бережная цепочка холода и честное происхождение – чтобы на вашей свежей корочке каждая икринка сияла вкусом.</p>
+      <div class="cta-group">
+        <a href="#catalog" class="btn primary">Перейти в каталог</a>
+        <button class="btn outline" data-dialog="consult">Получить консультацию</button>
+      </div>
+      <ul class="trust-badges">
+        <li>ГОСТ качество</li>
+        <li>Шоковая заморозка</li>
+        <li>Холодовая цепь 24/7</li>
+      </ul>
+    </div>
+    <a href="#catalog" class="scroll-hint" aria-label="Прокрутить к каталогу"></a>
+  </section>
+
+  <section class="section" id="catalog" aria-labelledby="catalogTitle">
+    <div class="container">
+      <div class="section-head">
+    <h2 id="catalogTitle">Каталог</h2>
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">Все</button>
+          <button class="filter-btn" data-filter="caviar">Икра</button>
+          <button class="filter-btn" data-filter="seafood">Морепродукты</button>
+          <button class="filter-btn" data-filter="ready">Готовая продукция</button>
+        </div>
+      </div>
+      <div class="product-grid" id="productGrid" aria-live="polite">
+        <!-- Товары будут вставлены скриптом -->
+      </div>
+    </div>
+  </section>
+
+  <section class="section dark" id="benefits" aria-labelledby="benefitsTitle">
+    <div class="container">
+      <h2 id="benefitsTitle">Почему выбирают нас</h2>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="icon circle">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5 11-11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Прозрачное происхождение</h3>
+          <p>Каждая партия имеет документы о районе вылова и дате фасовки. Отслеживаем путь продукта.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="icon circle">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <h3>Свежесть и вкус</h3>
+          <p>Холодовая цепь не прерывается: от вылова до доставки. Сохраняем нежную структуру икринок.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="icon circle">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M3 12l7-9 7 9-7 9-7-9z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Премиальная упаковка</h3>
+            <p>Используем стекло и вакуум. Индивидуальные холодоэлементы для доставки в тёплый сезон.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="icon circle">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 6l-11 11-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Контроль качества</h3>
+          <p>Органолептические и лабораторные проверки. Выбираем только крупную, ровную икру.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section split" id="about">
+    <div class="split-media" aria-hidden="true">
+      <picture>
+        <source srcset="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2036&q=80" type="image/webp" />
+        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2036&q=80" alt="Процесс подготовки икры" loading="lazy" />
+      </picture>
+    </div>
+    <div class="split-content">
+      <h2>О компании</h2>
+      <p>Мы начали с небольшой семейной партии икры для друзей. Сегодня «Икорочка» – это команда, которая объединяет рыбаков Сахалина и Камчатки, технологов и специалистов по логистике. Мы держим высокую планку качества и честности. Без посредников, без лишнего воздуха в банках, без компромиссов.</p>
+      <ul class="check-list">
+        <li>Собственные поставки из северных регионов</li>
+        <li>Только соль и икра – никаких улучшителей</li>
+        <li>Удобные каналы заказа и быстрая доставка</li>
+      </ul>
+      <button class="btn primary" data-dialog="story">Наша история</button>
+    </div>
+  </section>
+
+  <section class="section" id="delivery">
+    <div class="container">
+      <h2>Доставка и оплата</h2>
+      <div class="delivery-grid">
+        <div class="delivery-card">
+          <h3>По Киеву</h3>
+          <p>Курьером в термосумке с холодоэлементами. Обычно 2–4 часа. Онлайн оплата или при получении.</p>
+        </div>
+        <div class="delivery-card">
+          <h3>По Украине</h3>
+          <p>Надёжные службы доставки / экспресс. Изотермическая упаковка с холодоэлементами. Подбор оптимального тарифа.</p>
+        </div>
+        <div class="delivery-card">
+          <h3>Самовывоз</h3>
+          <p>Холодильная витрина в пункте выдачи. Резерв на 24 часа после заказа.</p>
+        </div>
+        <div class="delivery-card">
+          <h3>Оплата</h3>
+          <p>Наличные, карта, онлайн-эквайринг, безнал для юрлиц. Чеки и закрывающие документы.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section dark contact" id="contacts">
+    <div class="container contact-layout">
+      <div class="contact-info">
+        <h2>Контакты</h2>
+        <p class="highlight">Готовы ответить на вопросы и помочь выбрать идеальный продукт.</p>
+        <ul class="contact-list">
+          <li><strong>Телефон:</strong> <a href="tel:+380500000000">+38 (050) 000-00-00</a></li>
+          <li><strong>WhatsApp:</strong> <a href="https://wa.me/380500000000" target="_blank" rel="noopener">Написать</a></li>
+          <li><strong>E-mail:</strong> <a href="mailto:info@ikorochka.ua">info@ikorochka.ua</a></li>
+          <li><strong>Instagram:</strong> <a href="#" target="_blank" rel="noopener">@ikorochka</a></li>
+        </ul>
+      </div>
+      <form class="contact-form" id="contactForm" novalidate>
+        <h3>Напишите нам</h3>
+        <div class="form-group">
+          <label for="name">Имя</label>
+          <input type="text" id="name" name="name" required placeholder="Ваше имя" />
+          <span class="error" data-error-for="name"></span>
+        </div>
+        <div class="form-group">
+          <label for="phone">Телефон</label>
+          <input type="tel" id="phone" name="phone" required placeholder="+7 (___) ___-__-__" />
+          <span class="error" data-error-for="phone"></span>
+        </div>
+        <div class="form-group">
+          <label for="message">Сообщение</label>
+          <textarea id="message" name="message" rows="4" placeholder="Ваш вопрос"></textarea>
+        </div>
+        <div class="policy">
+          <label class="checkbox">
+            <input type="checkbox" name="policy" required />
+            <span></span>Согласен с <a href="#" target="_blank">политикой конфиденциальности</a>
+          </label>
+          <span class="error" data-error-for="policy"></span>
+        </div>
+        <button class="btn primary full" type="submit">Отправить</button>
+        <p class="form-success" hidden>Спасибо! Мы свяжемся с вами в ближайшее время.</p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+  <img src="./assets/logo-icon.svg" alt="Икорочка на свежей корочке" class="footer-logo" />
+  <p>Икорочка на свежей корочке – премиальная икра и морепродукты. Свежесть и честность в каждой банке.</p>
+      </div>
+      <nav aria-label="Нижнее меню" class="footer-nav">
+        <h4>Навигация</h4>
+        <ul>
+          <li><a href="#catalog">Каталог</a></li>
+          <li><a href="#benefits">Почему мы</a></li>
+          <li><a href="#about">О нас</a></li>
+          <li><a href="#delivery">Доставка</a></li>
+          <li><a href="#contacts">Контакты</a></li>
+        </ul>
+      </nav>
+      <div class="footer-contacts">
+        <h4>Контакты</h4>
+        <ul>
+          <li><a href="tel:+380500000000">+38 (050) 000-00-00</a></li>
+          <li><a href="mailto:info@ikorochka.ua">info@ikorochka.ua</a></li>
+        </ul>
+      </div>
+      <div class="footer-subscribe">
+        <h4>Подписка</h4>
+        <form id="subscribeForm" class="subscribe-form" novalidate>
+          <input type="email" name="email" placeholder="Ваш e-mail" required />
+          <button type="submit" aria-label="Подписаться">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </form>
+        <p class="subscribe-success" hidden>Готово! Спасибо.</p>
+      </div>
+    </div>
+    <div class="sub-footer">
+      <div class="container flex between center-v">
+  <small>© 2025 Икорочка на свежей корочке. Все права защищены.</small>
+        <a href="#" class="policy-link">Политика конфиденциальности</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Диалоги -->
+  <dialog class="modal" id="callbackDialog">
+    <form method="dialog" class="modal-box" id="callbackForm">
+      <button class="modal-close" value="close" aria-label="Закрыть">
+        <span></span>
+      </button>
+      <h3>Заказать звонок</h3>
+      <div class="form-group">
+        <label for="cb_name">Имя</label>
+        <input type="text" id="cb_name" name="name" required />
+        <span class="error" data-error-for="cb_name"></span>
+      </div>
+      <div class="form-group">
+        <label for="cb_phone">Телефон</label>
+        <input type="tel" id="cb_phone" name="phone" required />
+        <span class="error" data-error-for="cb_phone"></span>
+      </div>
+      <div class="policy small">
+        <label class="checkbox">
+          <input type="checkbox" name="policy" required />
+          <span></span>Согласен с политикой
+        </label>
+        <span class="error" data-error-for="cb_policy"></span>
+      </div>
+      <button class="btn primary full" type="submit">Отправить</button>
+      <p class="form-success" hidden>Готово! Скоро перезвоним.</p>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="consultDialog">
+    <form method="dialog" class="modal-box" id="consultForm">
+      <button class="modal-close" value="close" aria-label="Закрыть">
+        <span></span>
+      </button>
+      <h3>Консультация</h3>
+      <div class="form-group">
+        <label for="cs_name">Имя</label>
+        <input type="text" id="cs_name" name="name" required />
+        <span class="error" data-error-for="cs_name"></span>
+      </div>
+      <div class="form-group">
+        <label for="cs_phone">Телефон</label>
+        <input type="tel" id="cs_phone" name="phone" required />
+        <span class="error" data-error-for="cs_phone"></span>
+      </div>
+      <div class="form-group">
+        <label for="cs_message">Вопрос</label>
+        <textarea id="cs_message" name="message" rows="3"></textarea>
+      </div>
+      <div class="policy small">
+        <label class="checkbox">
+          <input type="checkbox" name="policy" required />
+          <span></span>Согласен с политикой
+        </label>
+        <span class="error" data-error-for="cs_policy"></span>
+      </div>
+      <button class="btn primary full" type="submit">Отправить</button>
+      <p class="form-success" hidden>Готово! Мы свяжемся.</p>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="storyDialog">
+    <div class="modal-box long">
+      <button class="modal-close" value="close" aria-label="Закрыть">
+        <span></span>
+      </button>
+      <h3>Наша история</h3>
+      <p>Несколько лет назад мы попробовали сделать маленькую поставку икры для друзей. Мы искали честный продукт без «магии» и лишних добавок. То, чем гордилась бы северная семья рыбаков. Оказалось, что спрос на такую икру огромный. Так началась «Икорочка». Мы работаем напрямую с рыбаками, выбираем только крупное сырьё и готовим партии небольшими закладками. Это даёт контроль и свежесть. Мы не гонимся за объёмом — мы строим доверие.</p>
+      <p>Сегодня мы расширили ассортимент: добавили мороженые гребешки, креветки, слабосолёную рыбу и немного готовых закусок. Но подход не изменился: короткая логистика, строгий температурный режим и уважение к продукту. Спасибо, что выбираете нас.</p>
+    </div>
+  </dialog>
+
+  <div class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-label="Корзина">
+    <div class="cart-header">
+      <h3>Корзина</h3>
+      <button class="cart-close" aria-label="Закрыть корзину">×</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+  <div class="cart-total"><span>Итого:</span><strong id="cartTotal">0 ₴</strong></div>
+      <button class="btn primary full" id="checkoutBtn">Оформить заказ</button>
+    </div>
+  </div>
+  <div class="cart-backdrop" id="cartBackdrop" aria-hidden="true"></div>
+
+  <!-- Defer data and app scripts so parsing is non-blocking; order preserved by defer -->
+  <script src="./js/data.js" defer></script>
+  <script src="./js/main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS variables bridging legacy design tokens */
+:root {
+  --color-bg: #050507;
+  --color-surface: #101014;
+  --color-accent: #d2b055;
+  --color-accent-soft: #e7d08a;
+  --color-border: rgba(255,255,255,0.08);
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --shadow-soft: 0 2px 6px -1px rgba(0,0,0,.4), 0 4px 14px -2px rgba(0,0,0,.3);
+}
+
+html, body { @apply text-white scroll-smooth antialiased; }
+body { font-feature-settings: "rlig" 1, "calt" 1; background: #0b0d10; }
+
+/* Fresh vivid layered global background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(at 18% 22%, rgba(229,61,24,0.55), rgba(229,61,24,0) 60%),
+    radial-gradient(at 78% 28%, rgba(255,190,140,0.35), rgba(255,190,140,0) 62%),
+    radial-gradient(at 52% 78%, rgba(229,61,24,0.40), rgba(229,61,24,0) 58%),
+    linear-gradient(120deg, #14090a 0%, #0d1115 38%, #141a20 68%, #1a2026 100%);
+  background-blend-mode: screen, overlay, normal, normal;
+  animation: bg-shift 26s cubic-bezier(.55,.15,.25,1) infinite alternate;
+  pointer-events: none;
+}
+
+/* Subtle moving sheen overlay */
+body::after {
+  content: "";
+  position: fixed; inset:0; z-index:-1;
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,0.06) 0 2px, rgba(255,255,255,0) 2px 8px),
+    radial-gradient(circle at 30% 70%, rgba(255,255,255,0.08), transparent 70%);
+  mix-blend-mode: overlay;
+  opacity:.22;
+  animation: grain-move 9s steps(10) infinite;
+  pointer-events:none;
+}
+
+@keyframes bg-shift { to { filter: hue-rotate(-12deg) brightness(1.05); } }
+@keyframes grain-move { 0% { transform:translate3d(0,0,0); } 100% { transform:translate3d(-12px,-18px,0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none; }
+  body::after { animation: none; }
+}
+
+.container { @apply max-w-[1320px]; }
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #0d0d10; }
+::-webkit-scrollbar-thumb { background: linear-gradient(#2a2a32,#1c1c22); border-radius: 20px; border:2px solid #0d0d10; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(#34343c,#22222a); }
+
+/* Utilities */
+.shadow-soft { box-shadow: 0 2px 6px -1px rgba(0,0,0,.4), 0 4px 14px -2px rgba(0,0,0,.3); }
+.shadow-glow { box-shadow: 0 0 0 1px rgba(255,255,255,.05), 0 4px 24px -4px rgba(210,176,85,.18), 0 8px 48px -8px rgba(210,176,85,.12); }
+
+.gradient-gold { background: linear-gradient(135deg,#d2b055,#f3e4b0 60%,#d2b055); }
+.text-gradient-gold { background: linear-gradient(90deg,#d2b055,#f3e4b0,#d2b055); -webkit-background-clip:text; color:transparent; }
+
+.backdrop-glass { backdrop-filter: blur(18px) saturate(140%); background: linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02)); }
+
+/* Motion safety */
+@media (prefers-reduced-motion: reduce){
+  * { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+}
+
+/* Hero visual helpers */
+.animate-float { animation: float-anim 6s ease-in-out infinite; }
+@keyframes float-anim { 0% { transform: translateY(0) } 50% { transform: translateY(-8px) } 100% { transform: translateY(0) } }
+
+.text-gold-300 { color: #ffd980; }
+.shadow-gold-glow { box-shadow: 0 8px 40px rgba(210,176,85,0.18), 0 2px 12px rgba(210,176,85,0.12); }
+.blur-2xl { filter: blur(22px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float { animation: none !important; transform: none !important; }
+}
