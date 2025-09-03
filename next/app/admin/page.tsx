@@ -43,7 +43,11 @@ export default function AdminPage(){
   async function applyToServer(){
     try{
       const res = await fetch('/api/products', { method: 'POST', body: JSON.stringify(items), headers: { 'Content-Type': 'application/json' } })
-      if(!res.ok) throw new Error('save failed')
+      if(!res.ok){
+        let detail: any
+        try{ detail = await res.json() }catch{ try{ detail = await res.text() }catch{ detail = 'unknown error'} }
+        throw new Error('save failed: ' + (detail?.message || detail?.error || JSON.stringify(detail)))
+      }
       alert('Збережено на сервері')
     }catch(e){ alert('Не вдалося зберегти: ' + e) }
   }

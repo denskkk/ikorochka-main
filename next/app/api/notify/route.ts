@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 
 // Keep edge runtime for low latency. Simple in-memory rate limiter (best effort, not globally shared).
-export const runtime = 'edge'
+// Edge возможен, но для отладки Telegram иногда удобнее nodejs (лучше логи). Можно вернуть 'edge' при желании.
+export const runtime = 'nodejs'
 
 const TELEGRAM_API = 'https://api.telegram.org'
 
@@ -83,14 +84,33 @@ export async function POST(req: Request){
       `Комментарий: ${noteStr || '-'}`,
     ].join('\n')
 
-    const res = await fetch(`${TELEGRAM_API}/bot${token}/sendMessage`, {
+    const url = `${TELEGRAM_API}/bot${token}/sendMessage`
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chatId, text })
     })
     if(!res.ok){
-      const txt = await res.text()
-      return NextResponse.json({ error: 'telegram_error', detail: txt }, { status: 502 })
+      let detail: any
+      try { detail = await res.json() } catch { detail = await res.text() }
+      console.error('Telegram sendMessage failed', { status: res.status, detail })
+      return NextResponse.json({
+        error: 'telegram_error',
+        status: res.status,
+        detail,
+        debug: {
+          tokenPresent: !!token,
+            chatIdSample: chatId?.toString().slice(0,6)+"…",
+            urlUsed: '/bot<token>/sendMessage',
+            // Подсказки возможных причин
+            hints: [
+              'Проверь что бот добавлен в группу/канал и не заблокирован',
+              'Если канал: сделай бота админом',
+              'Убедись что chat id начинается с -100 для супер-группы/канала',
+              'Проверь токен через getMe: https://api.telegram.org/botTOKEN/getMe'
+            ]
+        }
+      }, { status: 502 })
     }
     return NextResponse.json({ ok: true })
   }catch(e:any){
