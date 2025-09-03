@@ -67,6 +67,7 @@ export default function AdminPage(){
       } else {
         setSaveInfo(`Збережено (${data.storage}) в ${new Date().toLocaleTimeString()} `)
       }
+  try { localStorage.setItem('LAST_PRODUCTS', JSON.stringify(items)); localStorage.setItem('LAST_PRODUCTS_UPDATED', String(Date.now())) } catch {/* ignore */}
     }catch(e){ setSaveInfo('Помилка: '+ e) }
     finally{ setSaving(false) }
   }

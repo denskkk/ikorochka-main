@@ -24,16 +24,24 @@ export default function CatalogPage() {
         if(!mounted) return
         if (data && typeof data === 'object' && 'error' in data) {
           console.error('GET /api/products error:', data)
+          // fallback to localStorage cached products
+          try{ const lp = localStorage.getItem('LAST_PRODUCTS'); if(lp) { setProducts(JSON.parse(lp)); return } }catch{/* ignore */}
           setProducts([])
         } else if (Array.isArray(data)) {
           // Allow genuine empty array (admin cleared catalog)
+          if(data.length === 0){
+            // attempt localStorage fallback if empty
+            try{ const lp = localStorage.getItem('LAST_PRODUCTS'); if(lp){ setProducts(JSON.parse(lp)); return } }catch{/* ignore */}
+          }
           setProducts(data)
         } else {
+          try{ const lp = localStorage.getItem('LAST_PRODUCTS'); if(lp){ setProducts(JSON.parse(lp)); return } }catch{/* ignore */}
           setProducts([])
         }
       })
       .catch((err)=> {
         console.error('failed to fetch /api/products', err)
+        try{ const lp = localStorage.getItem('LAST_PRODUCTS'); if(lp){ setProducts(JSON.parse(lp)); return } }catch{/* ignore */}
         setProducts([])
       })
       .finally(()=> setLoading(false))
