@@ -10,6 +10,8 @@ export default function AdminPage(){
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const empty: Product = { id: `p-${Date.now()}`, name: '', category: 'caviar', weight: '', price: 0, img: '/assets/ikra.png', stock: '' }
   const [form, setForm] = useState<Product>(empty)
+  const [saving, setSaving] = useState(false)
+  const [saveInfo, setSaveInfo] = useState<string>('')
 
   function startEdit(i:number){ setEditingIndex(i); setForm(items[i]) }
   function startNew(){ setEditingIndex(null); setForm({...empty, id:`p-${Date.now()}`}) }
@@ -42,24 +44,31 @@ export default function AdminPage(){
 
   async function applyToServer(){
     try{
-      const res = await fetch('/api/products', { method: 'POST', body: JSON.stringify(items), headers: { 'Content-Type': 'application/json' } })
+      setSaving(true); setSaveInfo('')
+      const headers: Record<string,string> = { 'Content-Type': 'application/json' }
+      const token = (typeof window!=='undefined') ? localStorage.getItem('ADMIN_TOKEN') : null
+      if(token) headers['x-admin-token'] = token
+      const res = await fetch('/api/products', { method: 'POST', body: JSON.stringify(items), headers })
       if(!res.ok){
         let detail: any
         try{ detail = await res.json() }catch{ try{ detail = await res.text() }catch{ detail = 'unknown error'} }
         throw new Error('save failed: ' + (detail?.message || detail?.error || JSON.stringify(detail)))
       }
-      alert('Збережено на сервері')
-    }catch(e){ alert('Не вдалося зберегти: ' + e) }
+      const data = await res.json()
+      setSaveInfo(`Збережено (${data.storage}) в ${new Date().toLocaleTimeString()} `)
+    }catch(e){ setSaveInfo('Помилка: '+ e) }
+    finally{ setSaving(false) }
   }
 
   return (
     <main className="container mx-auto px-5 py-12">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Admin — Продукти</h1>
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center flex-wrap">
           <button onClick={startNew} className="px-4 py-2 rounded-full bg-caviar-500 text-white">Додати товар</button>
           <button onClick={exportJSON} className="px-4 py-2 rounded-full border border-white/10">Експорт JSON</button>
-          <button onClick={applyToServer} className="px-4 py-2 rounded-full border border-white/10 bg-white/5">Зберегти на сервері</button>
+          <button disabled={saving} onClick={applyToServer} className="px-4 py-2 rounded-full border border-white/10 bg-white/5 disabled:opacity-40">{saving? 'Збереження...' : 'Зберегти на сервері'}</button>
+          <span className="text-xs text-white/60 min-w-[160px]">{saveInfo}</span>
         </div>
       </div>
 
@@ -90,7 +99,7 @@ export default function AdminPage(){
 
         <div className="p-4 rounded-lg border border-white/8">
           <h2 className="font-semibold mb-3">Форма товару</h2>
-          <p className="text-xs text-white/50 mb-4 leading-relaxed">Заповніть дані і натисніть «Зберегти». Зображення можна вставити як URL або завантажити файл (конвертується у base64). Після додавання кількох товарів натисніть «Зберегти на сервері» для публікації в каталозі.</p>
+          <p className="text-xs text-white/50 mb-4 leading-relaxed">Заповніть дані і натисніть «Зберегти». Зображення можна вставити як URL або завантажити файл (base64). Потім «Зберегти на сервері». Можете зберегти ADMIN_TOKEN у localStorage (в консолі: localStorage.setItem('ADMIN_TOKEN','ТВОЙ_ТОКЕН')) для захищеного доступу.</p>
           <div className="grid gap-2">
             <label className="text-xs text-white/60">ID</label>
             <input value={form.id} onChange={e=> setForm(f=>({...f, id:e.target.value}))} className="p-2 rounded bg-white text-black placeholder:text-black/50" />
