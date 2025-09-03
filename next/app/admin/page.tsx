@@ -12,6 +12,7 @@ export default function AdminPage(){
   const [form, setForm] = useState<Product>(empty)
   const [saving, setSaving] = useState(false)
   const [saveInfo, setSaveInfo] = useState<string>('')
+  const [adminToken, setAdminToken] = useState('')
 
   function startEdit(i:number){ setEditingIndex(i); setForm(items[i]) }
   function startNew(){ setEditingIndex(null); setForm({...empty, id:`p-${Date.now()}`}) }
@@ -40,6 +41,8 @@ export default function AdminPage(){
 
   useEffect(()=>{
     fetch('/api/products').then(r=> r.json()).then(data=> setItems(data || initialProducts)).catch(()=> setItems(initialProducts))
+  // load token from localStorage
+  try{ const t = localStorage.getItem('ADMIN_TOKEN'); if(t) setAdminToken(t) }catch{}
   },[])
 
   async function applyToServer(){
@@ -52,7 +55,11 @@ export default function AdminPage(){
       if(!res.ok){
         let detail: any
         try{ detail = await res.json() }catch{ try{ detail = await res.text() }catch{ detail = 'unknown error'} }
-        throw new Error('save failed: ' + (detail?.message || detail?.error || JSON.stringify(detail)))
+        const core = (detail?.message || detail?.error || JSON.stringify(detail))
+        if(detail?.error === 'unauthorized'){
+          throw new Error('unauthorized — задайте ADMIN_TOKEN. Введите токен ниже и повторите.')
+        }
+        throw new Error('save failed: ' + core)
       }
       const data = await res.json()
       setSaveInfo(`Збережено (${data.storage}) в ${new Date().toLocaleTimeString()} `)
@@ -70,6 +77,21 @@ export default function AdminPage(){
           <button disabled={saving} onClick={applyToServer} className="px-4 py-2 rounded-full border border-white/10 bg-white/5 disabled:opacity-40">{saving? 'Збереження...' : 'Зберегти на сервері'}</button>
           <span className="text-xs text-white/60 min-w-[160px]">{saveInfo}</span>
         </div>
+      </div>
+
+      <div className="mb-6 flex flex-wrap gap-3 items-end">
+        <div className="flex flex-col">
+          <label className="text-xs text-white/60 mb-1">ADMIN_TOKEN (для збереження)</label>
+          <input value={adminToken} onChange={e=> setAdminToken(e.target.value)} className="p-2 rounded bg-white text-black w-64" placeholder="вставте токен" />
+        </div>
+        <button
+          onClick={()=> { try{ localStorage.setItem('ADMIN_TOKEN', adminToken); setSaveInfo('Токен збережений в браузері'); }catch{ setSaveInfo('Не вдалося зберегти токен') } }}
+          className="px-4 py-2 rounded bg-white/10 border border-white/20 text-sm hover:bg-white/20">
+          Застосувати токен
+        </button>
+        {adminToken && (
+          <button onClick={()=> { try{ localStorage.removeItem('ADMIN_TOKEN'); }catch{} setAdminToken(''); setSaveInfo('Токен очищено'); }} className="px-3 py-2 rounded border border-white/20 text-xs">Очистити</button>
+        )}
       </div>
 
       <section className="grid gap-6 md:grid-cols-2">
