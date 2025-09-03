@@ -41,8 +41,8 @@ export default function AdminPage(){
 
   useEffect(()=>{
     fetch('/api/products').then(r=> r.json()).then(data=> setItems(data || initialProducts)).catch(()=> setItems(initialProducts))
-  // load token from localStorage
-  try{ const t = localStorage.getItem('ADMIN_TOKEN'); if(t) setAdminToken(t) }catch{}
+    // load token from localStorage
+    try{ const t = localStorage.getItem('ADMIN_TOKEN'); if(t) setAdminToken(t) }catch{/* ignore */}
   },[])
 
   async function applyToServer(){
@@ -90,7 +90,7 @@ export default function AdminPage(){
           Застосувати токен
         </button>
         {adminToken && (
-          <button onClick={()=> { try{ localStorage.removeItem('ADMIN_TOKEN'); }catch{} setAdminToken(''); setSaveInfo('Токен очищено'); }} className="px-3 py-2 rounded border border-white/20 text-xs">Очистити</button>
+          <button onClick={()=> { try{ localStorage.removeItem('ADMIN_TOKEN'); }catch{/* ignore */} setAdminToken(''); setSaveInfo('Токен очищено'); }} className="px-3 py-2 rounded border border-white/20 text-xs">Очистити</button>
         )}
       </div>
 
