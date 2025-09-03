@@ -62,7 +62,11 @@ export default function AdminPage(){
         throw new Error('save failed: ' + core)
       }
       const data = await res.json()
-      setSaveInfo(`Збережено (${data.storage}) в ${new Date().toLocaleTimeString()} `)
+      if(data.storage === 'memory'){
+        setSaveInfo(`Тимчасово (RAM) збережено о ${new Date().toLocaleTimeString()} ⚠️ Підключи Gist для постійного зберігання.`)
+      } else {
+        setSaveInfo(`Збережено (${data.storage}) в ${new Date().toLocaleTimeString()} `)
+      }
     }catch(e){ setSaveInfo('Помилка: '+ e) }
     finally{ setSaving(false) }
   }

@@ -11,6 +11,10 @@ export const runtime = 'nodejs'
 
 const DATA_PATH = path.join(process.cwd(), 'data', 'products.json')
 
+// Ephemeral in-memory fallback (not persisted across deployments / cold starts)
+let memData: string | null = null
+let memUpdated: string = ''
+
 export async function GET(){
   // Try local file first
   try{
@@ -31,6 +35,10 @@ export async function GET(){
         return NextResponse.json({ error: 'cannot_read_products', message: String(err?.message||err), fallback:'gist_failed' }, { status: 500 })
       }
     }
+    // Memory fallback
+    if(memData){
+      return new NextResponse(memData, { status: 200, headers: { 'Content-Type': 'application/json', 'X-Source':'memory', 'X-Updated': memUpdated } })
+    }
     return NextResponse.json({ error: 'cannot_read_products', message: String(e?.message || e) }, { status: 500 })
   }
 }
@@ -50,7 +58,16 @@ export async function POST(req: Request){
       await fs.writeFile(DATA_PATH, dataStr, 'utf-8')
       return NextResponse.json({ ok: true, storage: 'file', ts: new Date().toISOString() })
     }catch(fileErr:any){
-      if(!(GITHUB_TOKEN && GIST_ID)) throw fileErr
+      const fmsg = String(fileErr?.message || fileErr)
+      // If gist not configured, attempt in-memory fallback for EROFS
+      if(!(GITHUB_TOKEN && GIST_ID)) {
+        if(fmsg.includes('EROFS')){
+          memData = dataStr
+          memUpdated = new Date().toISOString()
+            return NextResponse.json({ ok: true, storage: 'memory', ephemeral: true, ts: memUpdated, warning: 'Data stored only in RAM (configure GITHUB_TOKEN + PRODUCTS_GIST_ID for persistence)' })
+        }
+        throw fileErr
+      }
       // Fallback to gist update
       const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
         method: 'PATCH',
