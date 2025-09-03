@@ -99,7 +99,7 @@ export default function AdminPage(){
 
         <div className="p-4 rounded-lg border border-white/8">
           <h2 className="font-semibold mb-3">Форма товару</h2>
-          <p className="text-xs text-white/50 mb-4 leading-relaxed">Заповніть дані і натисніть «Зберегти». Зображення можна вставити як URL або завантажити файл (base64). Потім «Зберегти на сервері». Можете зберегти ADMIN_TOKEN у localStorage (в консолі: localStorage.setItem('ADMIN_TOKEN','ТВОЙ_ТОКЕН')) для захищеного доступу.</p>
+          <p className="text-xs text-white/50 mb-4 leading-relaxed">Заповніть дані і натисніть «Зберегти». Зображення можна вставити як URL або завантажити файл (base64). Потім «Зберегти на сервері». Можете зберегти ADMIN_TOKEN у localStorage (в консолі: <code>localStorage.setItem(&apos;ADMIN_TOKEN&apos;,&apos;ТВОЙ_ТОКЕН&apos;)</code>) для захищеного доступу.</p>
           <div className="grid gap-2">
             <label className="text-xs text-white/60">ID</label>
             <input value={form.id} onChange={e=> setForm(f=>({...f, id:e.target.value}))} className="p-2 rounded bg-white text-black placeholder:text-black/50" />

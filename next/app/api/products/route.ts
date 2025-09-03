@@ -16,7 +16,7 @@ export async function GET(){
   try{
     const raw = await fs.readFile(DATA_PATH, 'utf-8')
     let mtime = ''
-    try { const st = await fs.stat(DATA_PATH); mtime = st.mtime.toISOString() } catch{}
+  try { const st = await fs.stat(DATA_PATH); mtime = st.mtime.toISOString() } catch{ /* ignore stat error */ }
     return new NextResponse(raw, { status: 200, headers: { 'Content-Type': 'application/json', 'X-Source':'file', 'X-Updated': mtime } })
   }catch(e:any){
     if(GITHUB_TOKEN && GIST_ID){
