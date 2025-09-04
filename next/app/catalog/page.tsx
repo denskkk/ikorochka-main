@@ -81,7 +81,7 @@ export default function CatalogPage() {
                 </div>
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-xl font-bold text-gold-400">{formatPrice(p.price)}</span>
-                  <OrderButton variant="small" labelOverride={langLabel()} />
+                  <OrderButton variant="small" labelOverride={langLabel()} productId={p.id} productName={p.name} productPrice={p.price} />
                 </div>
               </div>
               <div className="mt-3 text-xs text-white/40">{p.stock}</div>

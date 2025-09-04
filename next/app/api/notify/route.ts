@@ -44,8 +44,8 @@ function looksSpam(note: string){
 export async function POST(req: Request){
   try{
     const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || '0.0.0.0'
-    const body = await req.json().catch(()=> ({}))
-    const { name, phone, note, website } = body || {}
+  const body = await req.json().catch(()=> ({}))
+  const { name, phone, note, website, productId, productName, productPrice } = body || {}
 
     // Honeypot
     if(website){
@@ -76,13 +76,21 @@ export async function POST(req: Request){
     const token = process.env.TELEGRAM_BOT_TOKEN
     const chatId = process.env.TELEGRAM_CHAT_ID
 
-    const text = [
-      'Новая заявка с сайта:',
-      `IP: ${ip}`,
-      `Имя: ${nameStr || '-'}`,
-      `Телефон: ${phoneStr || '-'}`,
-      `Комментарий: ${noteStr || '-'}`,
-    ].join('\n')
+    const lines: string[] = []
+    lines.push('Новая заявка с сайта:')
+    lines.push(`IP: ${ip}`)
+    lines.push(`Имя: ${nameStr || '-'}`)
+    lines.push(`Телефон: ${phoneStr || '-'}`)
+    if(productId || productName){
+      const pLine = [`Товар:`,
+        productName ? ` ${productName}` : '',
+        productId ? ` (id: ${productId})` : '',
+        (productPrice!==undefined && productPrice!==null && productPrice!=='') ? ` | Цена: ${productPrice}` : ''
+      ].join('').trim()
+      lines.push(pLine)
+    }
+    lines.push(`Комментарий: ${noteStr || '-'}`)
+    const text = lines.join('\n')
 
     const url = `${TELEGRAM_API}/bot${token}/sendMessage`
     const res = await fetch(url, {
@@ -94,21 +102,48 @@ export async function POST(req: Request){
       let detail: any
       try { detail = await res.json() } catch { detail = await res.text() }
       console.error('Telegram sendMessage failed', { status: res.status, detail })
+
+      const description: string = (detail?.description || '').toLowerCase()
+      let cause = 'unknown'
+      const nextSteps: string[] = []
+      if(description.includes('chat not found')){
+        cause = 'chat_not_found'
+        nextSteps.push(
+          'Убедись что указал правильный CHAT ID (для канала/супергруппы обычно начинается с -100...)',
+          'Добавь бота в канал/группу и дай хотя бы право отправки сообщений',
+          'Если это приватный канал: сделай бота админом или используй @username для получения id через сторонние боты (@getidsbot)',
+          'Проверь токен через: https://api.telegram.org/bot<TOKEN>/getMe (должен вернуть ok:true)'
+        )
+      }else if(description.includes('forbidden')){
+        cause = 'forbidden'
+        nextSteps.push(
+          'Пользователь/чат запретил боту писать или бот не добавлен',
+          'Для каналов: бот должен быть админом',
+          'Попробуй удалить и снова добавить бота'
+        )
+      }else{
+        nextSteps.push('Проверь токен и chat id','Повтори запрос позже','Смотри логи для деталей')
+      }
+
       return NextResponse.json({
         error: 'telegram_error',
         status: res.status,
+        cause,
         detail,
+        suggestions: nextSteps,
         debug: {
           tokenPresent: !!token,
-            chatIdSample: chatId?.toString().slice(0,6)+"…",
-            urlUsed: '/bot<token>/sendMessage',
-            // Подсказки возможных причин
-            hints: [
-              'Проверь что бот добавлен в группу/канал и не заблокирован',
-              'Если канал: сделай бота админом',
-              'Убедись что chat id начинается с -100 для супер-группы/канала',
-              'Проверь токен через getMe: https://api.telegram.org/botTOKEN/getMe'
-            ]
+          chatIdSample: chatId?.toString().slice(0,6)+"…",
+          urlUsed: '/bot<token>/sendMessage',
+          hints: [
+            'Бот в канале/группе и не заблокирован',
+            'Для канала: бот админ',
+            'Chat id корректный (минус перед числами, -100 для канала)',
+            'Проверка токена через getMe'
+          ],
+          selfTest: {
+            curlExample: 'curl -X POST https://api.telegram.org/botTOKEN/sendMessage -H "Content-Type: application/json" -d "{\\n  \'chat_id\': CHAT_ID,\\n  \'text\': \'test\'\\n}"'
+          }
         }
       }, { status: 502 })
     }

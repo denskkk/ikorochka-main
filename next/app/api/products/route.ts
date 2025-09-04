@@ -9,7 +9,9 @@ const ADMIN_TOKEN = process.env.ADMIN_SYNC_TOKEN
 
 export const runtime = 'nodejs'
 
-const DATA_PATH = path.join(process.cwd(), 'data', 'products.json')
+// process.cwd() в рантайме = папка next/, а реальный файл каталога лежит на уровень выше: ../data/products.json
+const DATA_PATH = path.join(process.cwd(), '..', 'data', 'products.json')
+const STATIC_PATH = path.join(process.cwd(), '..', 'data', 'static-products.json')
 
 // Ephemeral in-memory fallback (not persisted across deployments / cold starts)
 let memData: string | null = null
@@ -19,18 +21,30 @@ export async function GET(){
   // Try local file first
   try{
     const raw = await fs.readFile(DATA_PATH, 'utf-8')
+    let list: any = []
+    try { list = JSON.parse(raw) } catch { list = [] }
+    if(Array.isArray(list) && list.length === 0){
+      // fallback to static baseline
+      const staticRaw = await fs.readFile(STATIC_PATH, 'utf-8')
+      return new NextResponse(staticRaw, { status: 200, headers: { 'Content-Type': 'application/json', 'X-Source':'static-fallback' } })
+    }
     let mtime = ''
-  try { const st = await fs.stat(DATA_PATH); mtime = st.mtime.toISOString() } catch{ /* ignore stat error */ }
-    return new NextResponse(raw, { status: 200, headers: { 'Content-Type': 'application/json', 'X-Source':'file', 'X-Updated': mtime } })
+    try { const st = await fs.stat(DATA_PATH); mtime = st.mtime.toISOString() } catch{ /* ignore stat error */ }
+    return new NextResponse(JSON.stringify(list), { status: 200, headers: { 'Content-Type': 'application/json', 'X-Source':'file', 'X-Updated': mtime } })
   }catch(e:any){
     if(GITHUB_TOKEN && GIST_ID){
       try{
         const r = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, 'Accept':'application/vnd.github+json' } })
         if(!r.ok) throw new Error('gist_fetch_failed '+r.status)
         const j:any = await r.json()
-        const content = j?.files?.['products.json']?.content || '[]'
+        let content = j?.files?.['products.json']?.content || '[]'
+        let parsed: any = []
+        try { parsed = JSON.parse(content) } catch { parsed = [] }
+        if(Array.isArray(parsed) && parsed.length === 0){
+          try { content = await fs.readFile(STATIC_PATH,'utf-8'); return new NextResponse(content, { status: 200, headers: { 'Content-Type':'application/json', 'X-Source':'static-fallback-gist' } }) } catch {/* ignore */}
+        }
         const updated = j?.updated_at || ''
-        return new NextResponse(content, { status: 200, headers: { 'Content-Type': 'application/json', 'X-Source':'gist', 'X-Updated': updated } })
+        return new NextResponse(JSON.stringify(parsed), { status: 200, headers: { 'Content-Type': 'application/json', 'X-Source':'gist', 'X-Updated': updated } })
       }catch(err:any){
         return NextResponse.json({ error: 'cannot_read_products', message: String(err?.message||err), fallback:'gist_failed' }, { status: 500 })
       }
@@ -39,6 +53,8 @@ export async function GET(){
     if(memData){
       return new NextResponse(memData, { status: 200, headers: { 'Content-Type': 'application/json', 'X-Source':'memory', 'X-Updated': memUpdated } })
     }
+    // Final static fallback
+    try { const staticRaw = await fs.readFile(STATIC_PATH,'utf-8'); return new NextResponse(staticRaw, { status: 200, headers: { 'Content-Type':'application/json', 'X-Source':'static-fallback-final' } }) } catch {/* ignore */}
     return NextResponse.json({ error: 'cannot_read_products', message: String(e?.message || e) }, { status: 500 })
   }
 }

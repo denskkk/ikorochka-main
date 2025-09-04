@@ -4,9 +4,9 @@ import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
-interface OrderButtonProps { variant?: 'default' | 'small'; labelOverride?: string }
+interface OrderButtonProps { variant?: 'default' | 'small'; labelOverride?: string; productId?: string; productName?: string; productPrice?: number }
 
-export default function OrderButton({ variant='default', labelOverride }: OrderButtonProps){
+export default function OrderButton({ variant='default', labelOverride, productId, productName, productPrice }: OrderButtonProps){
   const [open, setOpen] = useState(false)
   const [name,setName] = useState('')
   const [phone,setPhone] = useState('')
@@ -31,7 +31,7 @@ export default function OrderButton({ variant='default', labelOverride }: OrderB
     if(!phone.trim()) { setErrorMsg(t.required); return }
     setStatus('sending'); setErrorMsg('')
     try {
-      const res = await fetch('/api/notify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, phone, note, website, locale: lang }) })
+  const res = await fetch('/api/notify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, phone, note, website, locale: lang, productId, productName, productPrice }) })
       if(res.ok){
         setStatus('ok')
         setName(''); setPhone(''); setNote(''); setWebsite('')

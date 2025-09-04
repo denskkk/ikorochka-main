@@ -3,7 +3,12 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import useHydrated from './hooks/useHydrated'
 
-export default function ContactForm(){
+interface ContactFormProps {
+  productId?: string
+  productName?: string
+  productPrice?: number
+}
+export default function ContactForm({ productId, productName, productPrice }: ContactFormProps){
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [note, setNote] = useState('')
@@ -25,7 +30,7 @@ export default function ContactForm(){
       const res = await fetch('/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, note, locale: lang })
+        body: JSON.stringify({ name, phone, note, locale: lang, productId, productName, productPrice })
       })
       if(res.ok){
         setStatus('ok')
